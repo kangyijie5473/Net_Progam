@@ -56,12 +56,13 @@ bool TimerList<T>::delEvent(int timerId)
 }
 
 template <typename T>
-typename std::list<T>::iterator TimerList<T>::getIndex(time_t timeout)
+typename std::list<T>::iterator 
+TimerList<T>::getIndex(time_t timeout)
 {
-    for(auto &it : eventList)
-    {
-        if(it.timeout > timeout);
-            //return it;
-    }
-    return eventList.end();
+    
+    typename std::list<T>::iterator i = eventList.begin();
+    for(; i != eventList.end(); i++)
+        if(i->timeout > timeout)
+            return i;
+    return i;
 }
