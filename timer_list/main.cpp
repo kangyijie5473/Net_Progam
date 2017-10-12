@@ -6,22 +6,25 @@
  */
 
 #include <iostream>
-#include "./TimerList.h"
-
+#include "./TimerList.hpp"
 #include "./Timer.h"
+
 int func(void *arg)
 {
+    std::cout << "print " << std::endl;
     return 1;
 }
+
 int main(void)
 {
     TimerList<Timer> timerlist(5);
-    
+
     Timer t;
     t.fd = 1;
     t.timerId = 2;
-    t.timeout = time(NULL);
+    t.timeout = time(NULL) + 20;
     t.doJob = func;
-    timerlist.addEvent(t);
 
+    timerlist.addEvent(t);
+    std::cout << timerlist.getLeastTimeout();
 }
