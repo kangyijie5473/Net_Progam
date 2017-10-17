@@ -8,6 +8,8 @@
 #define _TIMERLIST_H
 #include <list>
 #include <time.h>
+#include <cstdio>
+#include <iostream>
 template<typename T>
 class TimerList{
 public:
@@ -18,7 +20,10 @@ public:
     bool addEvent(T &&x);
     time_t getLeastTimeout();
     bool delEvent(int TimerId);
+    bool dealEvent();
     void freeList();
+    bool isEmpty();
+
 private:
     int _listMaxLength;
     std::list<T> eventList;
@@ -39,6 +44,11 @@ void TimerList<T>::freeList()
 }
 
 template <typename T>
+bool TimerList<T>::isEmpty()
+{
+    return eventList.empty();
+}
+template <typename T>
 bool TimerList<T>::addEvent(const T &event)
 {
     auto it = getIndex(event.timeout);
@@ -55,6 +65,18 @@ bool TimerList<T>::addEvent(T &&event)
 }
 
 template <typename T>
+bool TimerList<T>::dealEvent()
+{
+
+    for(auto i = eventList.begin(); i != eventList.end(); ++i){
+        if (i->timeout <= time(NULL)){
+            i->doJob(NULL);
+            i = eventList.erase(i);
+        }
+    }
+    std::cout << eventList.size();
+}
+template <typename T>
 time_t TimerList<T>::getLeastTimeout()
 {
     return eventList.front().timeout;
@@ -63,12 +85,11 @@ time_t TimerList<T>::getLeastTimeout()
 template <typename T>
 bool TimerList<T>::delEvent(int timerId)
 {
-    for(auto it : eventList){
-        if(it.timerId == timerId){
-            eventList.erase(it);
+    for(auto i = eventList.begin(); i < eventList.end(); ++i)
+        if(i->timerId == timerId){
+            eventList.erase(i);
             return true;
         }
-    }
     return false;
 }
 

@@ -6,12 +6,13 @@
  */
 
 #include <iostream>
+#include "Network.h" 
 #include "./TimerList.hpp"
 #include "./Timer.h"
 
-int func(void *arg)
+static int func(void *arg)
 {
-    std::cout << "print " << std::endl;
+    std::cout << "ding dong! Now is  "<< time(NULL) << std::endl;
     return 1;
 }
 
@@ -19,12 +20,27 @@ int main(void)
 {
     TimerList<Timer> timerlist(5);
 
-    Timer t;
+    
+    Timer t,b;
     t.fd = 1;
     t.timerId = 2;
-    t.timeout = time(NULL) + 20;
+    t.timeout = time(NULL) + 10;
     t.doJob = func;
 
+    b.timeout = t.timeout + 5;
+    b.doJob = func;
+    
+    int timeout;
+    Network server(5473);
+    server.Listen();
+    server.initMainLoop();
     timerlist.addEvent(t);
-    std::cout << timerlist.getLeastTimeout();
+    timerlist.addEvent(b);
+
+    while(!timerlist.isEmpty()){
+        timeout = (timerlist.getLeastTimeout() - time(NULL) ) * 1000;
+        server.startMainLoop(timeout);
+        timerlist.dealEvent();
+    }
+
 }
