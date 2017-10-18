@@ -14,5 +14,6 @@ struct Timer{
     int timerId;
     time_t timeout;
     std::function<int(void *)> doJob;
+    ~Timer(){doJob = nullptr;}
 };
 #endif
