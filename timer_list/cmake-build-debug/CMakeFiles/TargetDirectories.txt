@@ -1,3 +1,0 @@
-/home/kang/src/Net_Program/timer_list/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/kang/src/Net_Program/timer_list/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/kang/src/Net_Program/timer_list/cmake-build-debug/CMakeFiles/timer_list.dir
