@@ -21,14 +21,13 @@ void sig_handler(int sig)
 void Network::addSig(int sig)
 {
     struct sigaction sa;
-    //memset(&sa, 0, sizeof(struct sigaction));
+    memset(&sa, 0, sizeof(struct sigaction));
     sa.sa_handler =sig_handler;
     sa.sa_flags |= SA_RESTART;
     sigemptyset(&sa.sa_mask);
     sigaddset(&sa.sa_mask, SIGALRM);
     assert(sigaction(sig, &sa, NULL) != -1);
     printf("addSig\n");
-    //signal(sig, sig_handler);
 }
 int Network::Listen() {
     int optrval = 1;
@@ -50,7 +49,7 @@ int Network::Listen() {
     return 1;
 }
 bool Network::setNonBlocking(int fd) {
-    if(fcntl(fd, F_SETFL, fcntl(_socket_fd, F_GETFD, 0)|O_NONBLOCK) == -1){
+    if(fcntl(fd, F_SETFL, fcntl(fd, F_GETFD, 0)|O_NONBLOCK) == -1){
         return false;
     }else
         return true;
@@ -60,8 +59,11 @@ bool Network::delFd(int fd)
 {
     if(epoll_ctl(_kdpfd, EPOLL_CTL_DEL, fd, NULL) < 0)
         return false;
-    else
-        return true;//to do: close(fd)???
+    else{
+    	close(fd);
+        return true;
+    }
+
 }
 
 bool Network::addFd(int fd)
@@ -116,10 +118,10 @@ void Network::setAlarm()
 }
 template<typename T>
 int Network::startMainLoop(T &timerlist) {
-    int curfds = 1;
+    int curfds = 1;// It is just a demo
     int acceptCount = 0;
     _nfds = epoll_wait(_kdpfd, _events, curfds, -1);
-    if(_nfds == -1){
+    if(_nfds == -1 && errno != EINTR){
         perror("epoll_wait");
         return -1;
     }
@@ -148,11 +150,11 @@ int Network::startMainLoop(T &timerlist) {
             std::cout << "HUP" << std::endl;
             delFd(_events[n].data.fd);//kernel version > 2.6.9
             continue;
-        }else if(_events[n].data.fd == _pipeFd[1]){
+        }else if(_events[n].data.fd == _pipeFd[0]){
             _timeoutFlag = true;
+            continue;
         }else if(_events[n].events & EPOLLIN){
-            std::cout << "add task" << std::endl;
-        }else if(0);
+        }
     }
 }
 

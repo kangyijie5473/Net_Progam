@@ -20,13 +20,11 @@ int main(void)
     assert(epollfd != -1);
     timerlist.setEpollFd(epollfd);
 
+    server.setAlarm();
     while(1){
-        printf("poll\n");
         server.startMainLoop(timerlist);
-        printf("deal Time event");
-        server.dealTimeEvent(timerlist);
-        server.setAlarm();
+        if(server.dealTimeEvent(timerlist)){
+            server.setAlarm();
+        }
     }
-    
-
 }
