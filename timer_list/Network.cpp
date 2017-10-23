@@ -23,7 +23,7 @@ int Network::Listen() {
     return 1;
 }
 bool Network::setNonBlocking(int fd) {
-    if(fcntl(fd, F_SETFL, fcntl(_socket_fd, F_GETFD, 0)|O_NONBLOCK) == -1){
+    if(fcntl(fd, F_SETFL, fcntl(fd, F_GETFD, 0)|O_NONBLOCK) == -1){
         return false;
     }else
         return true;
