@@ -151,7 +151,9 @@ int Network::startMainLoop(T &timerlist) {
             delFd(_events[n].data.fd);//kernel version > 2.6.9
             continue;
         }else if(_events[n].data.fd == _pipeFd[0]){
+            char tempbuf[1];
             _timeoutFlag = true;
+            read(_pipeFd[0], tempbuf, 1);
             continue;
         }else if(_events[n].events & EPOLLIN){
         }
