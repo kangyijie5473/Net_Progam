@@ -6,3 +6,23 @@
  */
 
 
+#include "LogBuffer.h"
+#include <cstring>
+bool LogBuffer::append(const char *str, int len)
+{
+    if(len > this->free_size())
+        return false;
+    else
+        memcpy(&buffer_[now_index_], str, len);
+
+    now_index_ += len;
+    return true;
+}
+unsigned int LogBuffer::free_size()
+{
+    return buffer_max_size - now_index_ - 1;
+}
+void LogBuffer::clear()
+{
+    now_index_ = 0;
+}
