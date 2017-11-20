@@ -1,3 +1,3 @@
 CC=g++
 all:
-	$(CC) main.cpp  LogBuffer.cpp LogStream.cpp -o demo
+	$(CC)  -g main.cpp  LogBuffer.cpp LogStream.cpp -o demo

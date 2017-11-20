@@ -5,11 +5,21 @@
 #include "LogStream.h"
 #include <iostream>
 #include <cstdio>
+void testDataType(){
+    LogStream logger;
+    unsigned int a = 123456;
+    int b = 789;
+    unsigned long long c = 123456;
+    long long d = 789;
+    std::string e = "hello world";
+    LogStream logger_new;
+    bool f = false;
+    bool g = true;
+    logger << a << b << std::string(" ")  << " "<< c << d  << e << f << g ;
+    //logger_new << logger;
+    printf("%s",logger.show());
+}
 int main(void)
 {
-    LogStream Logger;
-    unsigned int a = 987654321;
-    Logger << a;
-    Logger << 0;
-    printf("%s",Logger.show());
+    testDataType();
 }

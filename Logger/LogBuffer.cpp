@@ -18,7 +18,7 @@ bool LogBuffer::append(const char *str, int len)
     now_index_ += len;
     return true;
 }
-unsigned int LogBuffer::free_size()
+unsigned int LogBuffer::free_size() const
 {
     return buffer_max_size - now_index_ - 1;
 }

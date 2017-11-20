@@ -7,7 +7,7 @@
 #include "LogStream.h"
 #include <algorithm>
 
-
+const int MAX_INT_LEGNTH = 30;
 LogStream& LogStream::operator<<(bool b) {
     buffer_.append(b ? "T" : "F", 1);
     return *this;
@@ -15,6 +15,11 @@ LogStream& LogStream::operator<<(bool b) {
 LogStream& LogStream::operator<<(const char c)
 {
     buffer_.append(&c, 1);
+    return *this;
+}
+LogStream& LogStream::operator<<(const char *str)
+{
+    buffer_.append(str, strlen(str));
     return *this;
 }
 
@@ -37,35 +42,73 @@ int LogStream::getIntegerString_(char *buf, T value) {
     return p - buf;
 }
 
-/* Integer */
-LogStream& LogStream::operator<<(unsigned int i)
+/* get format Integer and append buffer */
+template <typename T>
+void LogStream::appendFormatInteger_(T i)
 {
-    char buf[30];//TODO:30 is temp
+    char buf[MAX_INT_LEGNTH];
     int len = getIntegerString_(buf, i);
     buffer_.append(buf, len);
+}
+
+
+LogStream& LogStream::operator<<(unsigned int i)
+{
+    appendFormatInteger_(i);
     return *this;
 }
 LogStream& LogStream::operator<<(int i)
 {
-    char buf[30];//TODO:30 is temp
-    int len = getIntegerString_(buf, i);
-    buffer_.append(buf, len);
+    appendFormatInteger_(i);
     return *this;
 }
-//LogStream& LogStream::operator<<(unsigned long)
-//{
-//
-//}
-//LogStream& LogStream::operator<<(long)
-//{
-//
-//}
-//LogStream& LogStream::operator<<(long long)
-//{
-//
-//}
-//LogStream& LogStream::operator<<(unsigned long long)
-//{
-//
-//}
-//
+LogStream& LogStream::operator<<(unsigned long i)
+{
+    appendFormatInteger_(i);
+    return *this;
+}
+LogStream& LogStream::operator<<(long i)
+{
+    appendFormatInteger_(i);
+    return *this;
+}
+LogStream& LogStream::operator<<(long long i)
+{
+    appendFormatInteger_(i);
+    return *this;
+}
+LogStream& LogStream::operator<<(unsigned long long i)
+{
+    appendFormatInteger_(i);
+    return *this;
+}
+LogStream& LogStream::operator<<(unsigned short i)
+{
+    appendFormatInteger_(i);
+    return *this;
+}
+LogStream& LogStream::operator<<(short i)
+{
+    appendFormatInteger_(i);
+    return *this;
+}
+
+LogStream& LogStream::operator<<(double i)
+{
+    // todo:float
+}
+
+LogStream& LogStream::operator<<(float i)
+{
+    // todo:float
+}
+LogStream& LogStream::operator<<(const LogBuffer& logbuffer)
+{
+    buffer_.append(logbuffer.show(), LogBuffer::buffer_max_size - logbuffer.free_size());
+    return *this;
+}
+LogStream& LogStream::operator<<(const std::string& str)
+{
+    buffer_.append(str.c_str(), str.size());
+    return *this;
+}

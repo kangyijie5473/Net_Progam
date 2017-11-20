@@ -35,11 +35,14 @@ public:
     LogStream &operator<<(const LogBuffer &);
 
     /* debug */
-    char *show(){return buffer_.show();}
+    const char *show(){return buffer_.show();}
 private:
     template <typename T>
     int getIntegerString_(char *buf, T value);
     LogBuffer buffer_;
+
+    template <typename T>
+    void appendFormatInteger_(T i);
 
 };
 #endif
