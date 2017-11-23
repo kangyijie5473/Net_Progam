@@ -104,11 +104,19 @@ LogStream& LogStream::operator<<(float i)
 }
 LogStream& LogStream::operator<<(const LogBuffer& logbuffer)
 {
-    buffer_.append(logbuffer.show(), LogBuffer::buffer_max_size - logbuffer.free_size());
+    buffer_.append(logbuffer.data(), LogBuffer::buffer_max_size - logbuffer.free_size());
     return *this;
 }
 LogStream& LogStream::operator<<(const std::string& str)
 {
     buffer_.append(str.c_str(), str.size());
     return *this;
+}
+void LogStream::setOutPutLogMessage(std::function<void(const char *, int)> outPutFunc)
+{
+    outputLogMessage = outPutFunc;
+}
+LogStream::~LogStream()
+{
+    outputLogMessage(buffer_.data(), LogBuffer::buffer_max_size - buffer_.free_size());
 }

@@ -17,7 +17,7 @@ void testDataType(){
     bool g = true;
     logger << a << b << std::string(" ")  << " "<< c << d  << e << f << g ;
     //logger_new << logger;
-    printf("%s",logger.show());
+    printf("%s",logger.data());
 }
 int main(void)
 {

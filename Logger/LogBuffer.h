@@ -16,12 +16,12 @@ public:
 
     bool append(const char *str, int len);
     void clear();
-    unsigned int free_size() const ;
+    int free_size() const ;
     static const int buffer_max_size  = 1000;
 
 
     /* debug */
-    const char *show() const { return  buffer_;};
+    const char *data() const { return  buffer_;};
 private:
     char buffer_[buffer_max_size];
 

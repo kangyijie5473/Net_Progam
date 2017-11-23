@@ -10,9 +10,11 @@
 
 #include <string>
 #include "LogBuffer.h"
+#include <functional>
 //class LogBuffer;TOdo:how to declare
 class LogStream{
 public:
+    ~LogStream();
     LogStream &operator<<(bool);
 
     LogStream &operator<<(unsigned char);
@@ -34,8 +36,9 @@ public:
     LogStream &operator<<(const std::string &);
     LogStream &operator<<(const LogBuffer &);
 
-    /* debug */
-    const char *show(){return buffer_.show();}
+    static void setOutPutLogMessage(std::function<void(const char*, int)>);
+
+    const char *data(){return buffer_.data();}
 private:
     template <typename T>
     int getIntegerString_(char *buf, T value);
@@ -43,6 +46,7 @@ private:
 
     template <typename T>
     void appendFormatInteger_(T i);
+    std::function<void(const char*, int)> outputLogMessage;
 
 };
 #endif
