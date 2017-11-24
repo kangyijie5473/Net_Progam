@@ -8,14 +8,19 @@
 #include "LogBuffer.h"
 #include <memory>
 #include <thread>
+#include <queue>
+#include <mutex>
+#include <atomic>
 
 class AsyncLogger {
 public:
-    AsyncLogger();
-    AsyncLogger(std::string log_file_name):log_file_name_(log_file_name){};
+    //AsyncLogger();
+    AsyncLogger(std::string log_file_name);
     void append(const char *, int);
+    void run(){ running_state = true;}
 private:
     void init();
+    void appendLogFile();
 
     std::unique_ptr<LogBuffer> now_input_buffer_;
     std::unique_ptr<LogBuffer> now_output_buffer_;
@@ -23,7 +28,9 @@ private:
     std::thread output_thread;
 
     std::string log_file_name_;
+    FILE *log_file_;
     std::mutex mutex_;
+    std::atomic_bool running_state;
 };
 
 

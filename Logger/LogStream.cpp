@@ -112,9 +112,9 @@ LogStream& LogStream::operator<<(const std::string& str)
     buffer_.append(str.c_str(), str.size());
     return *this;
 }
-void LogStream::setOutPutLogMessage(std::function<void(const char *, int)> outPutFunc)
+void LogStream::setOutputLogMessage(std::function<void(const char *, int)>& out)
 {
-    outputLogMessage = outPutFunc;
+    LogStream::outputLogMessage = out;
 }
 LogStream::~LogStream()
 {

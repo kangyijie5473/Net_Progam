@@ -36,7 +36,7 @@ public:
     LogStream &operator<<(const std::string &);
     LogStream &operator<<(const LogBuffer &);
 
-    static void setOutPutLogMessage(std::function<void(const char*, int)>);
+    static void setOutputLogMessage(std::function<void(const char*, int)>& );
 
     const char *data(){return buffer_.data();}
 private:
@@ -46,7 +46,7 @@ private:
 
     template <typename T>
     void appendFormatInteger_(T i);
-    std::function<void(const char*, int)> outputLogMessage;
+    static std::function<void(const char*, int)> outputLogMessage;
 
 };
 #endif

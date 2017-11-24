@@ -3,8 +3,10 @@
 //
 
 #include "LogStream.h"
+#include "AsyncLogger.h"
 #include <iostream>
 #include <cstdio>
+void toAsyncLogFile(const char *, int);
 void testDataType(){
     LogStream logger;
     unsigned int a = 123456;
@@ -19,7 +21,19 @@ void testDataType(){
     //logger_new << logger;
     printf("%s",logger.data());
 }
+AsyncLogger testLogger("hello_log");
+
+//LogStream::setOutputLogMessage(nullptr);
+
+void toAsyncLogFile(const char *src, int len)
+{
+    testLogger.append(src, len);
+}
+
 int main(void)
 {
+    //LogStream::setOutputLogMessage(std::bind(&toAsyncLogFile));
+
+    //std::function<void(const char *, int)> f = toAsyncLogFile;
     testDataType();
 }
