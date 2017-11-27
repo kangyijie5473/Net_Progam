@@ -6,6 +6,7 @@
 #include "AsyncLogger.h"
 #include <iostream>
 #include <cstdio>
+std::function<void(const char *, int)> LogStream::outputLogMessage = nullptr;
 void toAsyncLogFile(const char *, int);
 void testDataType(){
     LogStream logger;
@@ -32,7 +33,7 @@ void toAsyncLogFile(const char *src, int len)
 
 int main(void)
 {
-    //LogStream::setOutputLogMessage(std::bind(&toAsyncLogFile));
+    LogStream::setOutputLogMessage(std::bind(toAsyncLogFile, std::placeholders::_1, std::placeholders::_2));
 
     //std::function<void(const char *, int)> f = toAsyncLogFile;
     testDataType();

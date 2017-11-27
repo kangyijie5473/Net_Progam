@@ -36,7 +36,7 @@ public:
     LogStream &operator<<(const std::string &);
     LogStream &operator<<(const LogBuffer &);
 
-    static void setOutputLogMessage(std::function<void(const char*, int)>& );
+    static void setOutputLogMessage(std::function<void(const char*, int)>&& );
 
     const char *data(){return buffer_.data();}
 private:
