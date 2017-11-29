@@ -20,7 +20,7 @@ bool LogBuffer::append(const char *str, int len)
 }
 int LogBuffer::free_size() const
 {
-    return buffer_max_size - now_index_ - 1;
+    return buffer_max_size - now_index_ ;
 }
 void LogBuffer::clear()
 {
