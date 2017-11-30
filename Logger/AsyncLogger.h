@@ -18,7 +18,8 @@ class AsyncLogger {
 public:
     AsyncLogger(std::string log_file_name);
     void append(const char *, int);
-    void run(){ running_state = true;}
+    void run(){ running_state = true; thread_start_cond_.notify_all();}
+    ~AsyncLogger(){fclose(log_file_);}
 private:
     void init();
     void appendLogFile();
@@ -35,7 +36,8 @@ private:
     std::condition_variable_any cond_;
 
     std::atomic_bool running_state;
-    bool thread_start_flag_;
+    std::mutex thread_start_mutex_;
+    std::condition_variable_any thread_start_cond_;
 };
 
 

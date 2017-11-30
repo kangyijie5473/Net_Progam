@@ -3,11 +3,11 @@
 //
 
 #include <cassert>
+#include <iostream>
 #include "AsyncLogger.h"
 AsyncLogger::AsyncLogger(std::string log_file_name)
         :log_file_name_(log_file_name),
          running_state(false),
-         thread_start_flag_(false),
          output_thread(std::bind(&AsyncLogger::appendLogFile,this))
 {
     init();
@@ -20,54 +20,71 @@ void AsyncLogger::append(const char *log_message, int len)
     if(now_input_buffer_->free_size() > len){
         now_input_buffer_->append(log_message, len);
     }else{
+//        std::cout << "dirty push " << std::endl;
         dirty_buffers_.push_back(std::move(now_input_buffer_));
-        if(backup_input_buffer_)
+        if(backup_input_buffer_){
+            std::cout << "backup " << std::endl;
             now_input_buffer_ = std::move(backup_input_buffer_);
-        else
+
+        }
+        else{
+            std::cout <<"reset" << std::endl;
             now_input_buffer_.reset(new LogBuffer);
+
+        }
         now_input_buffer_->append(log_message, len);
+        cond_.notify_one();
+
     }
 
-    cond_.notify_one();
 }
 
 void AsyncLogger::appendLogFile()
 {
-    // todo : thread start
+
+    std::unique_lock<std::mutex> thread_locker(thread_start_mutex_);
+
+    thread_start_cond_.wait(thread_start_mutex_);
+
     std::vector<std::unique_ptr<LogBuffer>> write_to_file_buffers;
     std::unique_ptr<LogBuffer> now_output_buffer(new LogBuffer);
-    std::unique_ptr<LogBuffer> backup_output_buffer(new LogBuffer);
-        if(running_state){
+//    std::unique_ptr<LogBuffer> backup_output_buffer(new LogBuffer);
+        while (running_state){
             {
                 std::unique_lock<std::mutex> locker(mutex_);
                 assert(now_input_buffer_);
+
                 if(now_input_buffer_->free_size() == LogBuffer::buffer_max_size)
                     cond_.wait_for(locker, std::chrono::seconds(3));
+                std::cout << "run" << std::endl;
+
                 dirty_buffers_.push_back(std::move(now_input_buffer_));
                 now_input_buffer_ = std::move(now_output_buffer);
                 write_to_file_buffers.swap(dirty_buffers_);
-                if(!backup_input_buffer_)
-                    backup_input_buffer_ = std::move(backup_output_buffer);
+//                if(!backup_input_buffer_)
+//                    backup_input_buffer_ = std::move(backup_output_buffer);
             }
 
             for(int i = 0; i < write_to_file_buffers.size(); i++){
-                fwrite(write_to_file_buffers[i]->data(),
+                int temp = fwrite(write_to_file_buffers[i]->data(),
                        1,
                        LogBuffer::buffer_max_size - write_to_file_buffers[i]->free_size(),
                        log_file_);
 
+                if(temp == 1)
+                    perror("fwrite");
             }
-
-            if(write_to_file_buffers.size() > 2)
-                write_to_file_buffers.resize(2);
+            std::cout << "size is " << write_to_file_buffers.size() << std::endl;
+            if(write_to_file_buffers.size() > 1)
+                write_to_file_buffers.resize(1);
             if(!now_output_buffer){
                 now_output_buffer = std::move(write_to_file_buffers.back());
                 now_output_buffer->clear();
             }
-            if(!backup_output_buffer){
-                backup_output_buffer = std::move(write_to_file_buffers.back());
-                backup_output_buffer->clear();
-            }
+//            if(!backup_output_buffer){
+//                backup_output_buffer = std::move(write_to_file_buffers.back());
+//                backup_output_buffer->clear();
+//            }
             write_to_file_buffers.clear();
         }
 

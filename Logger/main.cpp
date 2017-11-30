@@ -9,17 +9,9 @@
 std::function<void(const char *, int)> LogStream::outputLogMessage = nullptr;
 void toAsyncLogFile(const char *, int);
 void testDataType(){
-    //LogStream logger;
 
-    unsigned int a = 123456;
-    int b = 789;
-    unsigned long long c = 123456;
-    long long d = 789;
-    std::string e = "worldkl";
-    bool f = false;
-    bool g = true;
+    std::string e = "hello";
 
-    //logger << a << b << std::string(" ")  << " "<< c << d  << e << f << g ;
     int t= 100;
     while(t--){
         LogStream logger;
