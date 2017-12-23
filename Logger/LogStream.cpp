@@ -6,6 +6,7 @@
  */
 #include "LogStream.h"
 #include <algorithm>
+#include <vector>
 
 const int MAX_INT_LEGNTH = 30;
 LogStream& LogStream::operator<<(bool b) {

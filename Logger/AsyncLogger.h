@@ -7,6 +7,7 @@
 
 
 #include "LogBuffer.h"
+#include "LogStream.h"
 #include <memory>
 #include <thread>
 #include <queue>
@@ -18,7 +19,7 @@ class AsyncLogger {
 public:
     AsyncLogger(std::string log_file_name);
     void append(const char *, int);
-    void run(){ running_state = true; thread_start_cond_.notify_all();}
+    void run();
     ~AsyncLogger(){fclose(log_file_);}
 private:
     void init();
@@ -28,7 +29,7 @@ private:
     std::unique_ptr<LogBuffer> backup_input_buffer_;
     std::vector<std::unique_ptr<LogBuffer>> dirty_buffers_;
     std::vector<std::unique_ptr<LogBuffer>> clean_buffers_;
-    std::thread output_thread;
+    std::unique_ptr<std::thread> output_thread;
 
     std::string log_file_name_;
     FILE *log_file_;
@@ -36,10 +37,8 @@ private:
     std::condition_variable_any cond_;
 
     std::atomic_bool running_state;
-    std::mutex thread_start_mutex_;
-    std::condition_variable_any thread_start_cond_;
-};
 
+};
 
 
 #endif //LOGGER_ASYNCLOGGER_H

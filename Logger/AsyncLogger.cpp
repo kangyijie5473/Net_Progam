@@ -7,8 +7,7 @@
 #include "AsyncLogger.h"
 AsyncLogger::AsyncLogger(std::string log_file_name)
         :log_file_name_(log_file_name),
-         running_state(false),
-         output_thread(std::bind(&AsyncLogger::appendLogFile,this))
+         running_state(false)
 {
     init();
 }
@@ -20,7 +19,6 @@ void AsyncLogger::append(const char *log_message, int len)
     if(now_input_buffer_->free_size() > len){
         now_input_buffer_->append(log_message, len);
     }else{
-//        std::cout << "dirty push " << std::endl;
         dirty_buffers_.push_back(std::move(now_input_buffer_));
         if(backup_input_buffer_){
             std::cout << "backup " << std::endl;
@@ -42,9 +40,7 @@ void AsyncLogger::append(const char *log_message, int len)
 void AsyncLogger::appendLogFile()
 {
 
-    std::unique_lock<std::mutex> thread_locker(thread_start_mutex_);
 
-    thread_start_cond_.wait(thread_start_mutex_);
 
     std::vector<std::unique_ptr<LogBuffer>> write_to_file_buffers;
     std::unique_ptr<LogBuffer> now_output_buffer(new LogBuffer);
@@ -94,9 +90,15 @@ void AsyncLogger::appendLogFile()
 void AsyncLogger::init()
 {
     log_file_ = fopen(log_file_name_.c_str(), "a");
-//    perror("fopen");
-//    assert(log_file_);
+
     now_input_buffer_.reset(new LogBuffer);
     backup_input_buffer_.reset(new LogBuffer);
-    output_thread.detach();
+
+}
+
+void AsyncLogger::run()
+{
+    running_state = true;
+    output_thread.reset(new std::thread(std::bind(&AsyncLogger::appendLogFile,this)));
+    output_thread->detach();
 }
